@@ -1,0 +1,1 @@
+{"version":3,"file":"Loading.types.d.ts","sourceRoot":"","sources":["../../../src/components/Loading/Loading.types.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,YAAY;IAC3B,IAAI,CAAC,EAAE,IAAI,GAAG,IAAI,GAAG,IAAI,CAAC;IAC1B,OAAO,CAAC,EAAE,SAAS,GAAG,MAAM,GAAG,UAAU,CAAC;IAC1C,IAAI,CAAC,EAAE,MAAM,CAAC;IACd,SAAS,CAAC,EAAE,MAAM,CAAC;CACpB"}
