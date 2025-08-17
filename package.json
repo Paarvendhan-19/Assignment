@@ -45,6 +45,7 @@
     "bundle-size": "npm run build:lib && npx webpack-bundle-analyzer dist",
     "prepublishOnly": "npm run build:lib && npm run test",
     "storybook:build": "storybook build -o storybook-static",
+    "build:storybook": "storybook build -o storybook-static",
     "build:prod": "npm run lint && npm run type-check && npm run test && npm run build",
     "deploy:prepare": "npm run build:prod && npm run storybook:build",
     "serve:prod": "npm run build:prod && npm start",
