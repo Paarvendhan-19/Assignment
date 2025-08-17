@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Components Library Demo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .demo-section { margin: 2rem 0; padding: 2rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; }
+        .demo-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1f2937; }
+        .component-demo { margin: 1rem 0; padding: 1rem; background: #f9fafb; border-radius: 0.375rem; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Frontend Components Library</h1>
+            <p class="text-xl text-gray-600">A production-ready React component library built with TypeScript and Tailwind CSS</p>
+        </header>
+
+        <div class="demo-section">
+            <h2 class="demo-title">DataTable Component</h2>
+            <div class="component-demo">
+                <div id="datatable-demo"></div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="demo-title">InputField Component</h2>
+            <div class="component-demo">
+                <div id="inputfield-demo"></div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="demo-title">Loading Component</h2>
+            <div class="component-demo">
+                <div id="loading-demo"></div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2 class="demo-title">ErrorBoundary Component</h2>
+            <div class="component-demo">
+                <div id="errorboundary-demo"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        // Simple Loading component
+        const Loading = ({ size = 'md', variant = 'spinner', text, className = '' }) => {
+            const sizeClasses = {
+                sm: 'w-4 h-4',
+                md: 'w-8 h-8',
+                lg: 'w-12 h-12'
+            };
+
+            const renderSpinner = () => (
+                <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]}`} />
+            );
+
+            const renderDots = () => (
+                <div className="flex space-x-1">
+                    {[0, 1, 2].map((i) => (
+                        <div
+                            key={i}
+                            className={`bg-blue-600 rounded-full animate-pulse ${sizeClasses[size]}`}
+                            style={{ animationDelay: `${i * 0.2}s` }}
+                        />
+                    ))}
+                </div>
+            );
+
+            const renderSkeleton = () => (
+                <div className="space-y-2">
+                    <div className={`bg-gray-200 rounded animate-pulse ${sizeClasses[size]}`} />
+                    <div className="bg-gray-200 rounded h-2 w-20 animate-pulse" />
+                </div>
+            );
+
+            const renderContent = () => {
+                switch (variant) {
+                    case 'dots':
+                        return renderDots();
+                    case 'skeleton':
+                        return renderSkeleton();
+                    default:
+                        return renderSpinner();
+                }
+            };
+
+            return (
+                <div className={`flex flex-col items-center justify-center space-y-2 ${className}`}>
+                    {renderContent()}
+                    {text && (
+                        <p className="text-sm text-gray-600 text-center">{text}</p>
+                    )}
+                </div>
+            );
+        };
+
+        // Simple InputField component
+        const InputField = ({ label, placeholder, helperText, errorMessage, value, onChange, disabled = false, invalid = false, loading = false, variant = 'filled', size = 'md' }) => {
+            const variantClasses = {
+                filled: 'bg-gray-50 border-gray-300 focus:bg-white focus:border-blue-500',
+                outlined: 'bg-white border-gray-300 focus:border-blue-500',
+                ghost: 'bg-transparent border-transparent focus:border-blue-500'
+            };
+
+            const sizeClasses = {
+                sm: 'px-3 py-1.5 text-sm',
+                md: 'px-3 py-2 text-base',
+                lg: 'px-4 py-3 text-lg'
+            };
+
+            const baseInputClasses = `
+                w-full border rounded-md transition-all duration-200
+                placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50
+                ${variantClasses[variant]}
+                ${sizeClasses[size]}
+                ${invalid ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
+                ${loading ? 'opacity-75' : ''}
+            `;
+
+            return (
+                <div className="input-field">
+                    {label && (
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {label}
+                        </label>
+                    )}
+                    
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder={placeholder}
+                            value={value}
+                            onChange={(e) => onChange(e.target.value)}
+                            disabled={disabled || loading}
+                            className={baseInputClasses}
+                        />
+                        
+                        {loading && (
+                            <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600" />
+                            </div>
+                        )}
+                    </div>
+                    
+                    {helperText && !errorMessage && (
+                        <p className="text-sm text-gray-500 mt-1">{helperText}</p>
+                    )}
+                    
+                    {errorMessage && (
+                        <p className="text-sm text-red-500 mt-1" role="alert">{errorMessage}</p>
+                    )}
+                </div>
+            );
+        };
+
+        // Simple DataTable component
+        const DataTable = ({ data, columns, loading, emptyState = 'No data available' }) => {
+            if (loading) {
+                return (
+                    <div className="flex justify-center items-center p-8">
+                        <Loading variant="spinner" size="lg" text="Loading data..." />
+                    </div>
+                );
+            }
+
+            if (!data.length) {
+                return (
+                    <div className="text-center p-8 text-gray-500">
+                        <div className="text-6xl mb-4">📊</div>
+                        <p className="text-lg font-medium">{emptyState}</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="overflow-x-auto">
+                    <table className="min-w-full border-collapse border border-gray-200 bg-white">
+                        <thead>
+                            <tr className="bg-gray-50">
+                                {columns.map((column) => (
+                                    <th key={column.accessor} className="border border-gray-200 p-3 text-left text-sm font-medium text-gray-700">
+                                        {column.Header}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {data.map((row, rowIndex) => (
+                                <tr key={rowIndex} className="hover:bg-gray-50 transition-colors">
+                                    {columns.map((column) => (
+                                        <td key={column.accessor} className="border border-gray-200 p-3 text-sm text-gray-900">
+                                            {row[column.accessor]}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        };
+
+        // Demo components
+        const DataTableDemo = () => {
+            const [loading, setLoading] = React.useState(false);
+            
+            const data = [
+                { id: 1, name: "John Doe", age: 28, email: "john@example.com" },
+                { id: 2, name: "Jane Smith", age: 34, email: "jane@example.com" },
+                { id: 3, name: "Bob Johnson", age: 45, email: "bob@example.com" },
+            ];
+            
+            const columns = [
+                { Header: "ID", accessor: "id" },
+                { Header: "Name", accessor: "name" },
+                { Header: "Age", accessor: "age" },
+                { Header: "Email", accessor: "email" },
+            ];
+
+            return (
+                <div>
+                    <div className="mb-4">
+                        <button 
+                            onClick={() => setLoading(!loading)}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        >
+                            {loading ? 'Stop Loading' : 'Start Loading'}
+                        </button>
+                    </div>
+                    <DataTable data={data} columns={columns} loading={loading} />
+                </div>
+            );
+        };
+
+        const InputFieldDemo = () => {
+            const [value, setValue] = React.useState('');
+            const [error, setError] = React.useState('');
+            const [loading, setLoading] = React.useState(false);
+
+            return (
+                <div className="space-y-6">
+                    <div>
+                        <h3 className="text-lg font-medium mb-2">Basic Input</h3>
+                        <InputField
+                            label="Name"
+                            placeholder="Enter your name"
+                            value={value}
+                            onChange={setValue}
+                            helperText="This is a helper text"
+                        />
+                    </div>
+                    
+                    <div>
+                        <h3 className="text-lg font-medium mb-2">Input with Error</h3>
+                        <InputField
+                            label="Email"
+                            placeholder="Enter your email"
+                            value=""
+                            onChange={() => {}}
+                            errorMessage="Please enter a valid email address"
+                            invalid={true}
+                        />
+                    </div>
+                    
+                    <div>
+                        <h3 className="text-lg font-medium mb-2">Loading Input</h3>
+                        <InputField
+                            label="Username"
+                            placeholder="Enter username"
+                            value=""
+                            onChange={() => {}}
+                            loading={true}
+                        />
+                    </div>
+                    
+                    <div>
+                        <h3 className="text-lg font-medium mb-2">Different Variants</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <InputField
+                                label="Filled"
+                                placeholder="Filled variant"
+                                value=""
+                                onChange={() => {}}
+                                variant="filled"
+                            />
+                            <InputField
+                                label="Outlined"
+                                placeholder="Outlined variant"
+                                value=""
+                                onChange={() => {}}
+                                variant="outlined"
+                            />
+                            <InputField
+                                label="Ghost"
+                                placeholder="Ghost variant"
+                                value=""
+                                onChange={() => {}}
+                                variant="ghost"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const LoadingDemo = () => {
+            return (
+                <div className="space-y-8">
+                    <div>
+                        <h3 className="text-lg font-medium mb-4">Spinner Variants</h3>
+                        <div className="flex space-x-8">
+                            <div className="text-center">
+                                <Loading size="sm" />
+                                <p className="text-sm text-gray-600 mt-2">Small</p>
+                            </div>
+                            <div className="text-center">
+                                <Loading size="md" />
+                                <p className="text-sm text-gray-600 mt-2">Medium</p>
+                            </div>
+                            <div className="text-center">
+                                <Loading size="lg" />
+                                <p className="text-sm text-gray-600 mt-2">Large</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 className="text-lg font-medium mb-4">Different Variants</h3>
+                        <div className="flex space-x-8">
+                            <div className="text-center">
+                                <Loading variant="spinner" size="md" text="Spinner" />
+                            </div>
+                            <div className="text-center">
+                                <Loading variant="dots" size="md" text="Dots" />
+                            </div>
+                            <div className="text-center">
+                                <Loading variant="skeleton" size="md" text="Skeleton" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ErrorBoundaryDemo = () => {
+            const [hasError, setHasError] = React.useState(false);
+            
+            if (hasError) {
+                return (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+                        <h3 className="text-lg font-semibold text-red-800 mb-2">
+                            Something went wrong
+                        </h3>
+                        <p className="text-red-600 mb-3">
+                            An error occurred while rendering this component.
+                        </p>
+                        <button
+                            onClick={() => setHasError(false)}
+                            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                        >
+                            Try again
+                        </button>
+                    </div>
+                );
+            }
+
+            return (
+                <div>
+                    <button
+                        onClick={() => setHasError(true)}
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                    >
+                        Trigger Error
+                    </button>
+                    <p className="text-sm text-gray-600 mt-2">
+                        Click the button above to simulate an error and see the ErrorBoundary in action.
+                    </p>
+                </div>
+            );
+        };
+
+        // Render demos
+        ReactDOM.render(<DataTableDemo />, document.getElementById('datatable-demo'));
+        ReactDOM.render(<InputFieldDemo />, document.getElementById('inputfield-demo'));
+        ReactDOM.render(<LoadingDemo />, document.getElementById('loading-demo'));
+        ReactDOM.render(<ErrorBoundaryDemo />, document.getElementById('errorboundary-demo'));
+    </script>
+</body>
+</html> 
